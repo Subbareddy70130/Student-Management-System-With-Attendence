@@ -1,0 +1,14 @@
+{# usage: {% from "_avatar.html" import avatar %}{{ avatar(std) }} or {{ avatar(std, "xl") }} #}
+{% macro avatar(std, size="") -%}
+<span class="avatar tone-{{ std[0] % 5 }} {{ size }}">
+  {{ (std[1].split() | map('first') | list)[:2] | join | upper }}
+  {% if std[6] %}<img src="{{ std[6] }}" alt="" loading="lazy" data-avatar>{% endif %}
+</span>
+{%- endmacro %}
+
+{% macro meter(marks) -%}
+<div class="meter {{ 'low' if marks < 50 else ('mid' if marks < 75 else '') }}">
+  <div class="meter-track"><div class="meter-fill" style="width: {{ marks }}%"></div></div>
+  <span class="meter-num">{{ marks }}</span>
+</div>
+{%- endmacro %}

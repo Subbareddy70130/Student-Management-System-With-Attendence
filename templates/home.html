@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% from "_avatar.html" import avatar, meter %}
+{% block title %}All students{% endblock %}
+
+{% block content %}
+<header class="page-head">
+  <div>
+    <h1>Students</h1>
+    <p>Manage enrolments, marks and status in one place.</p>
+  </div>
+  <a class="btn" href="/students/add">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+    Add student
+  </a>
+</header>
+
+{% if stds %}
+{% set total = stds | length %}
+{% set active = stds | selectattr("7", "equalto", 1) | list | length %}
+{% set top = stds | max(attribute="4") %}
+<dl class="summary">
+  <div class="summary-item"><dt>Total students</dt><dd>{{ total }}</dd></div>
+  <div class="summary-item"><dt>Active</dt><dd>{{ active }}<small>{{ total - active }} inactive</small></dd></div>
+  <div class="summary-item"><dt>Average marks</dt><dd>{{ ((stds | sum(attribute="4")) / total) | round(1) }}</dd></div>
+  <div class="summary-item"><dt>Top scorer</dt><dd class="name-value">{{ top[1] }}<small>{{ top[4] }} marks</small></dd></div>
+</dl>
+{% endif %}
+
+<section class="panel">
+  {% if stds %}
+  <div class="toolbar">
+    <div class="search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input type="search" id="search" placeholder="Search by name or course" aria-label="Search students">
+    </div>
+    <div class="segmented" role="group" aria-label="Filter by status" id="status-filter">
+      <button type="button" data-status="all" aria-pressed="true">All</button>
+      <button type="button" data-status="1" aria-pressed="false">Active</button>
+      <button type="button" data-status="0" aria-pressed="false">Inactive</button>
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Student</th><th>Course</th><th>Age</th><th>Gender</th><th>Marks</th><th>Status</th><th class="actions">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="rows">
+        {% for s in stds %}
+        <tr data-search="{{ (s[1] ~ ' ' ~ s[5]) | lower }}" data-status="{{ s[7] }}">
+          <td>
+            <div class="person">
+              {{ avatar(s) }}
+              <div>
+                <a class="person-name" href="/students/{{ s[0] }}">{{ s[1] }}</a>
+                <div class="sub">ID {{ s[0] }}</div>
+              </div>
+            </div>
+          </td>
+          <td>{{ s[5] }}</td>
+          <td>{{ s[2] }}</td>
+          <td style="text-transform: capitalize">{{ s[3] }}</td>
+          <td>{{ meter(s[4]) }}</td>
+          <td>
+            {% if s[7] == 1 %}<span class="pill active">Active</span>{% else %}<span class="pill inactive">Inactive</span>{% endif %}
+          </td>
+          <td class="actions">
+            <a class="icon-btn" href="/students/{{ s[0] }}" title="View" aria-label="View {{ s[1] }}">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg>
+            </a>
+            <a class="icon-btn" href="/students/edit/{{ s[0] }}" title="Edit" aria-label="Edit {{ s[1] }}">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
+            </a>
+            <form method="post" action="/students/delete/{{ s[0] }}" style="display:inline" data-confirm="Delete {{ s[1] }}?" data-confirm-text="{{ s[1] }} will be removed from the register. This can't be undone.">
+              <button class="icon-btn danger" type="submit" title="Delete" aria-label="Delete {{ s[1] }}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v5M14 11v5"/></svg>
+              </button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="empty" id="no-match" hidden>
+    <h3>No matching students</h3>
+    <p>Try a different name, course or status.</p>
+  </div>
+
+  {% else %}
+  <div class="empty">
+    <h3>No students yet</h3>
+    <p>Add your first student to start building the register.</p>
+    <a class="btn" href="/students/add">Add student</a>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}

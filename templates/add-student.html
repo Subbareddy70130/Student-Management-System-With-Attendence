@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Add student{% endblock %}
+{% block content %}
+<header class="page-head">
+  <div>
+    <h1>Add student</h1>
+    <p>Enter the student's details to add them to the register.</p>
+  </div>
+</header>
+{% set std = form_std if form_std else None %}
+{% set action = "/students/add" %}
+{% set cancel_url = "/" %}
+{% set submit_label = "Add student" %}
+{% include "_form.html" %}
+{% endblock %}

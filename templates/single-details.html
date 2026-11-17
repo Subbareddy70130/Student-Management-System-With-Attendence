@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% from "_avatar.html" import avatar, meter %}
+{% block title %}{{ std[1] if std else 'Student not found' }}{% endblock %}
+{% block content %}
+{% if std %}
+<header class="page-head">
+  <div>
+    <h1>Student profile</h1>
+    <p><a href="/">All students</a> / {{ std[1] }}</p>
+  </div>
+</header>
+
+<div class="profile">
+  <section class="profile-card">
+    {{ avatar(std, "xl") }}
+    <h2>{{ std[1] }}</h2>
+    <div class="sub">ID {{ std[0] }}</div>
+    {% if std[7] == 1 %}<span class="pill active">Active</span>{% else %}<span class="pill inactive">Inactive</span>{% endif %}
+    <div class="profile-actions">
+      <a class="btn" href="/students/edit/{{ std[0] }}">Edit details</a>
+      <form method="post" action="/students/delete/{{ std[0] }}" data-confirm="Delete {{ std[1] }}?" data-confirm-text="{{ std[1] }} will be removed from the register. This can't be undone.">
+        <button class="btn btn-danger" type="submit">Delete student</button>
+      </form>
+      <a class="btn btn-ghost" href="/">Back to students</a>
+    </div>
+  </section>
+
+  <section class="facts-card">
+    <dl class="facts">
+      <div><dt>Course</dt><dd>{{ std[5] }}</dd></div>
+      <div><dt>Age</dt><dd>{{ std[2] }}</dd></div>
+      <div><dt>Gender</dt><dd>{{ std[3] }}</dd></div>
+      <div><dt>Status</dt><dd>{{ 'Active' if std[7] == 1 else 'Inactive' }}</dd></div>
+    </dl>
+    <div class="score">
+      <div class="score-head"><span class="sub">Marks</span><strong>{{ std[4] }}<span class="sub"> / 100</span></strong></div>
+      <div class="meter {{ 'low' if std[4] < 50 else ('mid' if std[4] < 75 else '') }}">
+        <div class="meter-track"><div class="meter-fill" style="width: {{ std[4] }}%"></div></div>
+      </div>
+    </div>
+  </section>
+</div>
+{% else %}
+<section class="panel"><div class="empty">
+  <h3>Student not found</h3>
+  <p>This student may have been deleted.</p>
+  <a class="btn" href="/">Back to students</a>
+</div></section>
+{% endif %}
+{% endblock %}

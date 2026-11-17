@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Edit student{% endblock %}
+{% block content %}
+{% if std %}
+<header class="page-head">
+  <div>
+    <h1>Edit student</h1>
+    <p>Update the details for {{ std[1] }}.</p>
+  </div>
+</header>
+{% set action = "/students/edit/" ~ std[0] %}
+{% set cancel_url = "/students/" ~ std[0] %}
+{% set submit_label = "Save changes" %}
+{% include "_form.html" %}
+{% else %}
+<section class="panel"><div class="empty">
+  <h3>Student not found</h3>
+  <p>This student may have been deleted.</p>
+  <a class="btn" href="/">Back to students</a>
+</div></section>
+{% endif %}
+{% endblock %}
